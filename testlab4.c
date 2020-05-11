@@ -85,10 +85,9 @@ static const struct {const char *const in, *const out;} testInOut[] = {
     "+1+1+1+1+1+1+1+1+1+1+1+99\n", "598"}
 };
 
-static int feederN(void)
-{
-    FILE *const in = fopen("in.txt", "w+");
-    if (!in) {
+static int FeedFromArray(void) {
+    FILE* const in = fopen("in.txt", "w+");
+    if (in == NULL) {
         printf("can't create in.txt. No space on disk?\n");
         return -1;
     }
@@ -97,86 +96,45 @@ static int feederN(void)
     return 0;
 }
 
-static int checkerN(void)
-{
-    FILE *const out = fopen("out.txt", "r");
-    char buf[128] = {0};
-    int passed = 1;
-    if (!out) {
+static int CheckFromArray(void) {
+    FILE* const out = fopen("out.txt", "r");
+    if (out == NULL) {
         printf("can't open out.txt\n");
         testN++;
         return -1;
     }
-    if (fgets(buf, sizeof(buf), out) == NULL) {
-        printf("no output -- ");
-    }
+    char buf[128] = {0};
+    const char* status = ScanChars(out, sizeof(buf), buf);
     fclose(out);
-    if (strchr(buf, '\n'))
-        *strchr(buf, '\n') = 0;
-    passed = _strnicmp(testInOut[testN].out, buf, strlen(testInOut[testN].out)) == 0;
-    if (passed) {
-        while (1) {
-            char ignored;
-            if (fscanf(out, "%c", &ignored) == EOF)
-                break;
-            if (strchr("\n\t ", ignored))
-                continue;
-            passed = 0;
-            printf("output is too long -- ");
-            break;
-        }
-    } 
-    if (passed) {
-        printf("PASSED\n");
-        testN++;
-        return 0;
-    } else {
-        printf("FAILED\n");
-        testN++;
-        return 1;
+    if (status == Pass && _strnicmp(testInOut[testN].out, buf, strlen(testInOut[testN].out)) != 0) {
+        status = Fail;
     }
+    if (status == Pass && HaveGarbageAtTheEnd(out)) {
+        status = Fail;
+    }
+    printf("%s\n", status);
+    ++testN;
+    return status == Fail;
 }
 
-const struct labFeedAndCheck labTests[] = {
-    {feederN, checkerN},
-    {feederN, checkerN},
-    {feederN, checkerN},
-    {feederN, checkerN},
-    {feederN, checkerN},
-    {feederN, checkerN},
-    {feederN, checkerN},
-    {feederN, checkerN},
-    {feederN, checkerN},
-    {feederN, checkerN},
-    {feederN, checkerN},
-    {feederN, checkerN},
-    {feederN, checkerN},
-    {feederN, checkerN},
-    {feederN, checkerN},
-    {feederN, checkerN},
-    {feederN, checkerN},
-    {feederN, checkerN},
-    {feederN, checkerN},
-    {feederN, checkerN},
-    {feederN, checkerN},
-    {feederN, checkerN},
-    {feederN, checkerN},
-    {feederN, checkerN},
-    {feederN, checkerN},
-    {feederN, checkerN},
-    {feederN, checkerN},
-    {feederN, checkerN},
-    {feederN, checkerN},
-    {feederN, checkerN},
-    {feederN, checkerN},
-    {feederN, checkerN},
-    {feederN, checkerN},
-    {feederN, checkerN}
-};
+TLabTest GetLabTest(int testIdx) {
+    (void)testIdx;
+    TLabTest labTest = {FeedFromArray, CheckFromArray};
+    return labTest;
+}
 
-const int labNTests = sizeof(labTests)/sizeof(labTests[0]);
+int GetTestCount(void) {
+    return sizeof(testInOut)/sizeof(testInOut[0]);
+}
 
-const char labName[] = "Lab 4 Calc";
+const char* GetTesterName(void) {
+    return "Lab 4 Calc";
+}
 
-int labTimeout = 3000;
-size_t labOutOfMemory = MIN_PROCESS_RSS_BYTES*2;
+int GetTestTimeout() {
+    return 3000;
+}
+
+size_t GetTestMemoryLimit() {
+    return MIN_PROCESS_RSS_BYTES;
+}
