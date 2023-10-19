@@ -223,6 +223,83 @@ static int CheckBig2(void)
     }
 }
 
+static int FeedBig3(void)
+{
+    FILE *const in = fopen("in.txt", "w+");
+    int i, err;
+    DWORD t;
+    if (!in) {
+        printf("can't create in.txt. No space on disk?\n");
+        return -1;
+    }
+    printf("Creating large text... ");
+    fflush(stdout);
+    t = GetTickCount();
+    for (i = 0, err = 0; err >= 0 && i < 1000000; ++i) {
+        if (i == 0) {
+            err = fputs("01\n", in); // hash 3
+            continue;
+        }
+        if (i % 100001 == 0) {
+            err = fputs("02468acegikmoqsuwy ", in); // no match
+        } else if (i % 500000 == 0) {
+            err = fputs("---31aaaaaaaaaaaaaa--- ", in); // h-match, 0-mismatch
+        } else if (i % 700000 == 0) {
+            err = fputs("---04aaaaaaaaaaaaaa--- ", in); // h-match, 1-mismatch
+        } else {
+            err = fputs("02468acegikmoqsuwy ", in);
+        }
+    }
+    if (err < 0) {
+        printf("can't create in.txt. No space on disk?\n");
+        fclose(in);
+        return -1;
+    }
+    t = RoundUptoThousand(GetTickCount() - t);
+    printf("done in T=%u seconds. Starting exe with timeout 2*T... ", (unsigned)t/1000);
+    LabTimeout = (int)t*2;
+    fflush(stdout);
+    return 0;
+}
+
+static int CheckBig3(void)
+{
+    FILE *const out = fopen("out.txt", "r");
+    unsigned i, passed = 1;
+    const int bigOut[] = {
+        3, 9499985, 13299989, 13299990,
+    };
+    if (!out) {
+        printf("can't open out.txt\n");
+        testN++;
+        return -1;
+    }
+    for (i = 0; i < sizeof(bigOut)/sizeof(bigOut[0]); i++) {
+        int n;
+        if (ScanInt(out, &n) != Pass) {
+            passed = 0;
+            break;
+        } else if (bigOut[i] != n) {
+            passed = 0;
+            printf("wrong output -- ");
+            break;
+        }
+    }
+    if (passed) {
+        passed = !HaveGarbageAtTheEnd(out);
+    }
+    fclose(out);
+    if (passed) {
+        printf("PASSED\n");
+        testN++;
+        return 0;
+    } else {
+        printf("FAILED\n");
+        testN++;
+        return 1;
+    }
+}
+
 const TLabTest LabTests[] = {
     {FeedFromArray, CheckFromArray},
     {FeedFromArray, CheckFromArray},
@@ -244,6 +321,7 @@ const TLabTest LabTests[] = {
     {FeedFromArray, CheckFromArray},
     {feederBig, checkerBig},
     {FeedBig2, CheckBig2},
+    {FeedBig3, CheckBig3},
 };
 
 TLabTest GetLabTest(int testIdx) {
