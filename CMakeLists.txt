@@ -60,7 +60,11 @@ function(SET_COMPILER_SETTINGS target)
 		$<$<C_COMPILER_ID:MSVC>:
 		/W4
 		/WX
-		>)
+		>
+		$<$<C_COMPILER_ID:GNU>:
+		-fexec-charset=cp1251
+		>
+    )
 
 	target_compile_definitions(${target} PRIVATE
 		$<$<BOOL:${MINGW}>:
