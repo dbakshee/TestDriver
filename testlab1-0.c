@@ -226,6 +226,74 @@ static int checkerBig1(void)
     }
 }
 
+static int feederBig2(void)
+{
+    FILE *const in = fopen("in.txt", "w+");
+    int i, err;
+    DWORD t;
+    if (!in) {
+        printf("can't create in.txt. No space on disk?\n");
+        return -1;
+    }
+    printf("Creating large text... ");
+    fflush(stdout);
+    t = GetTickCount();
+    fprintf(in, "aaaaaaaaaaaaaaaa\n");
+    for (err = 0, i = 1; err >= 0 && i < 1000*1000; i++) {
+        if (i % 10000 == 0) {
+            err = fputs("aaaaaaaaaaaaaaa\n", in);
+        } else {
+            err = fputs("aaaaaaaaaaaaaaa ", in);
+        }
+        if (err < 0) {
+            printf("can't create in.txt. No space on disk?\n");
+            fclose(in);
+            return -1;
+        }
+    }
+    fclose(in);
+    t = RoundUptoThousand(GetTickCount() - t);
+    printf("done in T=%u seconds. Starting exe with timeout 2*T... ", (unsigned)t/1000);
+    LabTimeout = (int)t*2;
+    fflush(stdout);
+    return 0;
+}
+
+static int checkerBig2(void)
+{
+    FILE *const out = fopen("out.txt", "r");
+    long long int i, passed = 1;
+    if (!out) {
+        printf("can't open out.txt\n");
+        testN++;
+        return -1;
+    }
+    for (i = 16; i < 1000*1000*16; i += 16) {
+        int n;
+        if (ScanInt(out, &n) != Pass) {
+            passed = 0;
+            break;
+        } else if (i != n) {
+            passed = 0;
+            printf("wrong output -- ");
+            break;
+        }
+    }
+    if (passed) {
+        passed = !HaveGarbageAtTheEnd(out);
+    }
+    fclose(out);
+    if (passed) {
+        printf("PASSED\n");
+        testN++;
+        return 0;
+    } else {
+        printf("FAILED\n");
+        testN++;
+        return 1;
+    }
+}
+
 const TLabTest LabTests[] = {
     {FeedFromArray, CheckFromArray},
     {FeedFromArray, CheckFromArray},
@@ -247,7 +315,8 @@ const TLabTest LabTests[] = {
     {FeedFromArray, CheckFromArray},
     {FeedFromArray, CheckFromArray},
     {feederBig, checkerBig},
-    {feederBig1, checkerBig1}
+    {feederBig1, checkerBig1},
+    {feederBig2, checkerBig2},
 };
 
 TLabTest GetLabTest(int testIdx) {
