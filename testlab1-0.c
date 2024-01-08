@@ -241,11 +241,13 @@ static int feederBig2(void)
     printf("Creating large text... ");
     fflush(stdout);
     t = GetTickCount();
-    fprintf(in, "abcdefghijklmnop\n");
-    const char sel[] = " _\377";
-    const size_t nsel = 1 + strlen(sel); // want use '\0' occasionally
-    for (err = 0, i = 1; err >= 0 && i < 16*1000*1000; i++) {
-        err = fputc(sel[rand() % nsel], in);
+    fprintf(in, "aaaaaaaaaaaaaaaa\n");
+    for (err = 0, i = 1; err >= 0 && i < 1000*1000; i++) {
+        if (i % 10000 == 0) {
+            err = fputs("aaaaaaaaaaaaaaa\n", in);
+        } else {
+            err = fputs("aaaaaaaaaaaaaaa ", in);
+        }
         if (err < 0) {
             printf("can't create in.txt. No space on disk?\n");
             fclose(in);
