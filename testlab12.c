@@ -64,7 +64,7 @@ static int CheckFromArray(void) {
     }
     char testOutput[128] = { 0 };
     int passed = 1;
-    const int outSymbols = (int)fread(testOutput, sizeof(char), sizeof(testOutput), fl_Out);
+    int outSymbols = (int)fread(testOutput, sizeof(char), sizeof(testOutput), fl_Out);
     if (!feof(fl_Out)) { // проверка, что файл не закрылся
             printf("Premature end of file");
             fclose(fl_Out);
@@ -76,6 +76,10 @@ static int CheckFromArray(void) {
             currentTest++;
             return -1;
         }
+
+    if (outSymbols > 0 && testOutput[outSymbols - 1] == '\n') {
+        outSymbols--;
+    }
 
     if (outSymbols != testInOut[currentTest].count_symbols) {
         if (outSymbols > testInOut[currentTest].count_symbols) {
