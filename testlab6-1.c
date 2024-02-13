@@ -206,6 +206,62 @@ static int checkerBig1(void)
     }
 }
 
+static int NoSpaceFor(FILE *in) {
+    printf("can't create in.txt. No space on disk?\n");
+    if (in) {
+        fclose(in);
+    }
+    return -1;
+}
+
+static int LabTimeout = 2000;
+
+static int feederBig2(void)
+{
+    FILE *in = fopen("in.txt", "w+");
+    unsigned i;
+    if (!in) {
+        return NoSpaceFor(in);
+    }
+    fprintf(in, "2000000\n");
+    for (i = 0; i < 200000; i++) {
+        if (fputs("1 1 1 1 1 1 1 1 1 1\n", in) < 0) {
+            return NoSpaceFor(in);
+        }
+    }
+    fclose(in);
+    LabMemoryLimit = 2000000 * (sizeof(int)+sizeof(int)+2*GetLabPointerSize())+MIN_PROCESS_RSS_BYTES;
+    return 0;
+}
+
+static int checkerBig2(void)
+{
+    testN++;
+    FILE *out = fopen("out.txt", "r");
+    if (!out) {
+        printf("can't open out.txt\n");
+        return -1;
+    }
+    int n;
+    if (ScanInt(out, &n) != Pass) {
+        goto wrong_output;
+    }
+    if (n != 21) {
+        goto wrong_output;
+    }
+    if (HaveGarbageAtTheEnd(out)) {
+        goto wrong_output;
+    }
+    fclose(out);
+    printf("PASSED\n");
+    return 0;
+
+wrong_output:
+    printf("wrong output -- FAILED\n");
+    fclose(out);
+    return 1;
+}
+
 const TLabTest LabTests[] = {
     {FeedFromArray, CheckFromArray},
     {FeedFromArray, CheckFromArray},
@@ -247,6 +303,7 @@ const TLabTest LabTests[] = {
     {FeedFromArray, CheckFromArray},
     {feederBig, checkerBig},
     {feederBig1, checkerBig1},
+    {feederBig2, checkerBig2},
 };
 
 TLabTest GetLabTest(int testIdx) {
@@ -262,7 +319,7 @@ const char* GetTesterName(void) {
 }
 
 int GetTestTimeout(void) {
-    return 6000;
+    return LabTimeout;
 }
 
 static size_t LabMemoryLimit = MIN_PROCESS_RSS_BYTES;
