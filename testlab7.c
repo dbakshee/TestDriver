@@ -36,7 +36,7 @@ static const struct {
         {4, 4, {{2, 4}, {1, 3}, {4, 3}, {1, 4}}, NULL},
         {5, 7, {{4, 2}, {2, 3}, {2, 1}, {4, 5}, {5, 3}, {5, 2}, {4, 1}}, NULL},
         {2, 4, {{1, 1}, {1, 2}, {2, 1}, {2, 2}}, "bad number of edges"},
-        {2, 2, {{1, 1}, {1, 2}}, "bad number of edges"},
+        {2, 2, {{1, 2}, {1, 2}}, "bad number of edges"},
         {N_MAX+1, 1, {{1, 1}}, "bad number of vertices"},
         {8, 16, {{6, 7}, {6, 4}, {8, 1}, {8, 3}, {2, 7}, {6, 3}, {2, 6}, {1, 7}, {2, 3}, {3, 7}, {4, 3}, {6, 5}, {7, 5}, {3, 1}, {1, 5}, {4, 2}}, "impossible to sort"},
         {6, 14, {{5, 1}, {5, 2}, {1, 6}, {5, 6}, {2, 6}, {1, 2}, {4, 3}, {6, 4}, {5, 3}, {5, 4}, {4, 1}, {3, 2}, {3, 1}, {6, 3}}, "impossible to sort"},
@@ -264,6 +264,63 @@ static int checkerBig1(void)
     return fact == Fail;
 }
 
+static int NoSpaceFor(FILE *in) {
+    printf("can't create in.txt. No space on disk?\n");
+    if (in) {
+        fclose(in);
+    }
+    return -1;
+}
+
+static int feederBig2(void)
+{
+    FILE *const in = fopen("in.txt", "w+");
+    if (!in) {
+        return NoSpaceFor(in);
+    }
+    fprintf(in, "%d\n", N_MAX);
+    fprintf(in, "%d\n", N_MAX-1);
+    for (int dst = 1; dst < N_MAX; dst++) {
+        fprintf(in, "%d %d\n", dst + 1, dst);
+    }
+    fclose(in);
+    LabMemoryLimit = N_MAX * 10 + (N_MAX-1) + MIN_PROCESS_RSS_BYTES;
+    return 0;
+}
+
+
+static int checkerBig2(void)
+{
+    FILE *const out = fopen("out.txt", "r");
+    const char *fact = Pass;
+    if (!out) {
+        printf("can't open out.txt\n");
+        testN++;
+        return -1;
+    }
+    { // test order
+        for (int i = N_MAX; i >= 1; --i) {
+            int job;
+            fact = ScanInt(out, &job);
+            if (fact == Fail) {
+                break;
+            }
+            if (job != i) {
+                printf("wrong output -- ");
+                fact = Fail;
+                break;
+            }
+        }
+    }
+    if (fact == Pass && HaveGarbageAtTheEnd(out)) {
+        fact = Fail;
+    }
+    fclose(out);
+    printf("%s\n", fact);
+    testN++;
+    return fact == Fail;
+}
+
 const TLabTest LabTests[] = {
         {FeedFromArray, CheckFromArray},
         {FeedFromArray, CheckFromArray},
@@ -311,6 +368,7 @@ const TLabTest LabTests[] = {
         {FeedFromArray, CheckFromArray},
         {feederBig, checkerBig},
         {feederBig1, checkerBig1},
+        {feederBig2, checkerBig2},
 };
 
 TLabTest GetLabTest(int testIdx) {
