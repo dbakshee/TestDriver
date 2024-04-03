@@ -321,6 +321,55 @@ static int checkerBig2(void)
     return fact == Fail;
 }
 
+static int feederBig3(void)
+{
+    FILE *const in = fopen("in.txt", "w+");
+    if (!in) {
+        return NoSpaceFor(in);
+    }
+    fprintf(in, "%d\n", N_MAX);
+    fprintf(in, "%d\n", N_MAX-1);
+    for (int dst = 1; dst < N_MAX; dst++) {
+        fprintf(in, "%d %d\n", dst, dst + 1);
+    }
+    fclose(in);
+    LabMemoryLimit = N_MAX * 10 + (N_MAX-1) + MIN_PROCESS_RSS_BYTES;
+    return 0;
+}
+
+
+static int checkerBig3(void)
+{
+    FILE *const out = fopen("out.txt", "r");
+    const char *fact = Pass;
+    if (!out) {
+        printf("can't open out.txt\n");
+        testN++;
+        return -1;
+    }
+    { // test order
+        for (int i = 1; i <= N_MAX; ++i) {
+            int job;
+            fact = ScanInt(out, &job);
+            if (fact == Fail) {
+                break;
+            }
+            if (job != i) {
+                printf("wrong output -- ");
+                fact = Fail;
+                break;
+            }
+        }
+    }
+    if (fact == Pass && HaveGarbageAtTheEnd(out)) {
+        fact = Fail;
+    }
+    fclose(out);
+    printf("%s\n", fact);
+    testN++;
+    return fact == Fail;
+}
+
 const TLabTest LabTests[] = {
         {FeedFromArray, CheckFromArray},
         {FeedFromArray, CheckFromArray},
@@ -369,6 +418,7 @@ const TLabTest LabTests[] = {
         {feederBig, checkerBig},
         {feederBig1, checkerBig1},
         {feederBig2, checkerBig2},
+        {feederBig3, checkerBig3},
 };
 
 TLabTest GetLabTest(int testIdx) {
