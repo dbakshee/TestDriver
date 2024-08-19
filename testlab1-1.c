@@ -28,8 +28,7 @@ static int FeedFromArray(void)
 {
     FILE *const in = fopen("in.txt", "w+");
     if (!in) {
-        printf("can't create in.txt. No space on disk?\n");
-        return -1;
+        return NoSpaceFor(in);
     }
     fprintf(in, "%s", testInOut[testN].in);
     fclose(in);
@@ -79,8 +78,7 @@ static int feederBig(void)
     int i;
     DWORD t;
     if (!in) {
-        printf("can't create in.txt. No space on disk?\n");
-        return -1;
+        return NoSpaceFor(in);
     }
     printf("Creating large text... ");
     fflush(stdout);
@@ -88,9 +86,7 @@ static int feederBig(void)
     fprintf(in, "0123456789abcdef\n");
     for (i = 1; i < 1024*1024*8; i++) {
         if (fprintf(in, "0123456789abcde\n") == EOF) {
-            printf("can't create in.txt. No space on disk?\n");
-            fclose(in);
-            return -1;
+            return NoSpaceFor(in);
         }
     }
     fprintf(in, "0123456789abcdef");
@@ -140,14 +136,6 @@ static int checkerBig(void)
         testN++;
         return 1;
     }
-}
-
-static int NoSpaceFor(FILE *in) {
-    printf("can't create in.txt. No space on disk?\n");
-    if (in) {
-        fclose(in);
-    }
-    return -1;
 }
 
 static int FeedBig2(void)
