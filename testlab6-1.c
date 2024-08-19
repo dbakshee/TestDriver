@@ -206,14 +206,6 @@ static int checkerBig1(void)
     }
 }
 
-static int NoSpaceFor(FILE *in) {
-    printf("can't create in.txt. No space on disk?\n");
-    if (in) {
-        fclose(in);
-    }
-    return -1;
-}
-
 static int LabTimeout = 2000;
 
 static int feederBig2(void)
