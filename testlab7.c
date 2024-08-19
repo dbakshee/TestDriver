@@ -264,14 +264,6 @@ static int checkerBig1(void)
     return fact == Fail;
 }
 
-static int NoSpaceFor(FILE *in) {
-    printf("can't create in.txt. No space on disk?\n");
-    if (in) {
-        fclose(in);
-    }
-    return -1;
-}
-
 static int feederBig2(void)
 {
     FILE *const in = fopen("in.txt", "w+");
