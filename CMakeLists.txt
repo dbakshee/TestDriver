@@ -80,6 +80,7 @@ set(TEST_LAB_SOURCES
 	testlab11.c
 	testlab12.c
  	testlabKosorajo.c
+	testlabQueens.c
 )
 foreach(source ${TEST_LAB_SOURCES})
 	get_filename_component(target ${source} NAME_WE)
