@@ -41,7 +41,7 @@ typedef uint32_t DWORD;
 DWORD GetTickCount(void);
 #endif
 
-static int NoSpaceFor(FILE *in) {
+static inline int NoSpaceFor(FILE *in) {
     puts("can't create in.txt.  No space on disk?");
     if (in) {
         fclose(in);
