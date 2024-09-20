@@ -7,7 +7,7 @@ static const struct {const char *const in, *const out;} testInOut[] = {
     {"0\n", "bad input"},
     {"11\n", "bad input"},
     {"5\n1 2 3 4\n", "bad input"},
-    {"-1\n", "bad input"},
+    {"-10\n", "bad input"},
     {"2\n1 1\n", "2"},
     {"5\n1 2 3 4 5\n", "15"},
     {"3\n1 2 3\n", "6"},
