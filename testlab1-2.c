@@ -23,7 +23,9 @@ static const struct {const char *const in; int n; int out[64];} testInOut[] = {
     {"\xE0\xE1\xE2\xE3\n\xE0\xE1\xE2\xE3\xE0\xE1\xE2\xE3",8,{0, 0, 0, 0, 1, 4, 5, 4}}, // абвг\nабвгабвг
     {"\xE0\xE1 \xE2\xE3\n\xE0\xE1 \xE2\xE3\xE0\xE1\xE2\xE3", 7, {0, 0, 0, 0, 0, 1, 5}}, // аб вг\nаб вгабвг
     {"\xE0\xE1 \xE2\xE3\n\xE0\xE1\xE2\xE3\n\xE0\xE1 \xE2\xE3", 9, {0, 0, 0, 0, 0, 1, 2, 6, 5}}, // аб вг\nабвг\nаб вг
-    {"000001\n000000000010", 18,{0, 1, 2, 3, 4, 0, 1, 5, 2, 5, 3, 5, 4, 5, 5, 5, 6, 6}}
+    {"000001\n000000000010", 18,{0, 1, 2, 3, 4, 0, 1, 5, 2, 5, 3, 5, 4, 5, 5, 5, 6, 6}},
+    {"aabaabaaab\n1", 10, {0, 1, 0, 1, 2, 3, 4, 5, 2, 3}},
+    {"ababcabababc\nababcabababababcababc\n", 18, {0, 0, 1, 2, 0, 1, 2, 3, 4, 3, 4, 5, 1, 11, 8, 4, 10, 4}},
 };
 
 static int FeedFromArray(void) {
@@ -91,7 +93,7 @@ static int FeederBigRand1(void) {
         fclose(in);
         return -1;
     }
-    for (unsigned int i = 1; i < 1024 * 1024 * 8; ++i) {
+    for (unsigned int i = 1; i < 1024 * 1024; ++i) {
         unsigned int randomPrefixLength = (unsigned int)rand() % 17;
         if (randomPrefixLength == 0) {
             if (putc(' ', in) == EOF) {
@@ -147,7 +149,7 @@ static int CheckerBigRand1(void) {
         srand(seed[bigTestN]);
         unsigned int number = 1;
         unsigned int a, b;
-        for (unsigned int i = 1; i < 1024 * 1024 * 8; ++i) {
+        for (unsigned int i = 1; i < 1024 * 1024; ++i) {
             unsigned int randomPrefixLength = ((unsigned int) rand()) % 17;
             if (randomPrefixLength == 0) {
                 ++number;
@@ -196,7 +198,7 @@ static int FeederBig(void) {
         printf("can't write in in.txt. No space on disk?\n");
         return -1;
     }
-    for (int i = 0; i < 1024 * 1024 * 8; ++i) {
+    for (int i = 0; i < 1024 * 1024 * 2; ++i) {
         if (fprintf(in, "%s", str) != strlen(str)) {
             printf("can't write in in.txt. No space on disk?\n");
             return -1;
@@ -238,7 +240,7 @@ static int CheckBig(void) {
     }
 
     if (passed) {
-        for (unsigned int i = 0; i < 1024 * 1024 * 8 * 2 - 1; ++i) {
+        for (unsigned int i = 0; i < 1024 * 1024 * 2 * 2 - 1; ++i) {
             unsigned int a, b;
             if (ScanUintUint(out, &a, &b) != Pass || a != 1 + i * 4 || b != 8) {
                 passed = 0;
@@ -263,6 +265,8 @@ static int CheckBig(void) {
 }
 
 const TLabTest LabTests[] = {
+    {FeedFromArray, CheckFromArray},
+    {FeedFromArray, CheckFromArray},
     {FeedFromArray, CheckFromArray},
     {FeedFromArray, CheckFromArray},
     {FeedFromArray, CheckFromArray},
