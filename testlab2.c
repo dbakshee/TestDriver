@@ -3,7 +3,10 @@
 #include <string.h>
 
 static int testN = 0;
-static const struct {const char *const in, *const out[16]; int n;} testInOut[] = {
+static const struct {
+    const char *const in, *const out[16];
+    int n;
+} testInOut[] = {
     {"214\n2\n", {"241", "412"}, 2},
     {"111\n1\n", {"bad input"}, 1},
     {"321\n1\n", {""}, 0},
@@ -21,10 +24,15 @@ static const struct {const char *const in, *const out[16]; int n;} testInOut[] =
     {"987654321098765432109876543210\n1\n", {"bad input"}, 1},
     {"012 3\n1\n", {"bad input"}, 1},
     {"89\n2000000000\n", {"98"}, 1},
-    {"625431\n1\n", {"631245"}, 1}
+    {"625431\n1\n", {"631245"}, 1},
+    {"0123459876\n10\n",
+     {"0123465789", "0123465798", "0123465879", "0123465897", "0123465978", "0123465987", "0123467589", "0123467598",
+      "0123467859", "0123467895"},
+     10},
 };
 
-static int FeedFromArray(void) {
+static int FeedFromArray(void)
+{
     FILE *const in = fopen("in.txt", "w+");
     if (in == NULL) {
         printf("can't create in.txt. No space on disk?\n");
@@ -35,14 +43,15 @@ static int FeedFromArray(void) {
     return 0;
 }
 
-static int CheckFromArray(void) {
-    FILE* const out = fopen("out.txt", "r");
+static int CheckFromArray(void)
+{
+    FILE *const out = fopen("out.txt", "r");
     if (out == NULL) {
         printf("can't open out.txt\n");
         testN++;
         return -1;
     }
-    const char* status = Pass;
+    const char *status = Pass;
     for (int i = 0; i < testInOut[testN].n; ++i) {
         char perm[32];
         status = ScanChars(out, sizeof(perm), perm);
@@ -62,24 +71,29 @@ static int CheckFromArray(void) {
     return status == Fail;
 }
 
-TLabTest GetLabTest(int testIdx) {
+TLabTest GetLabTest(int testIdx)
+{
     (void)testIdx;
     TLabTest labTest = {FeedFromArray, CheckFromArray};
     return labTest;
 }
 
-int GetTestCount(void) {
+int GetTestCount(void)
+{
     return sizeof(testInOut) / sizeof(testInOut[0]);
 }
 
-const char* GetTesterName(void) {
+const char *GetTesterName(void)
+{
     return "Lab 2 Deijkstra permutations";
 }
 
-int GetTestTimeout(void) {
+int GetTestTimeout(void)
+{
     return 3000;
 }
 
-size_t GetTestMemoryLimit(void) {
+size_t GetTestMemoryLimit(void)
+{
     return MIN_PROCESS_RSS_BYTES;
 }
