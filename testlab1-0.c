@@ -7,6 +7,8 @@ static int testN = 0;
 static const struct {const char *const in; int n, out[32];} testInOut[] = {
     {"example\nthis is simple example", 14, {7, 14, 13, 12, 11, 10, 20, 22, 21, 20, 19, 18, 17, 16}},
     {"x\n", 0, {0}},
+    {"x\ny", 1, {1}},
+    {"x\ny\n", 2, {1, 2}},
     {"0123456789abcdef\n0123456789abcdef", 16, {16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1}},
     {"0123\n01230123", 8, {4, 3, 2, 1, 8, 7, 6, 5}},
     {"0123\n0123x0123", 9, {4, 3, 2, 1, 8, 9, 8, 7, 6}},
@@ -294,6 +296,8 @@ static int checkerBig2(void)
 }
 
 const TLabTest LabTests[] = {
+    {FeedFromArray, CheckFromArray},
+    {FeedFromArray, CheckFromArray},
     {FeedFromArray, CheckFromArray},
     {FeedFromArray, CheckFromArray},
     {FeedFromArray, CheckFromArray},
