@@ -10,6 +10,7 @@ static const struct {const char *const in, *const out;} testInOut[] = {
     { "0\nbad input\n", "syntax error" },
     { "1\n* MUL 2\n2.0*2.0\n", "syntax error" },
     { "0\n(1", "syntax error" },
+    { "0\n1)", "syntax error" },
     { "0\n(1)", "1" },
     { "0\n123()\n", "syntax error" },
     { "0\n()123\n", "syntax error" },
