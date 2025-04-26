@@ -95,3 +95,4 @@ foreach(source ${TEST_LAB_SOURCES})
 endforeach()
 
 add_custom_target(testlab3-1 ALL COMMAND ${CMAKE_COMMAND} -E create_symlink testlab3-0 testlab3-1)
+add_custom_target(testlab8-1 ALL COMMAND ${CMAKE_COMMAND} -E create_symlink testlab8-0 testlab8-1)
