@@ -104,7 +104,7 @@ static int CheckFromArray(void) {
         return 1;
     }
     if (knapsackCost != TestData.Tests[currentTest].KnapsackCost) {
-        printf("Wrong knapsack cost output. Found %d, but excepted %d. -- Failed\n", knapsackCost, TestData.Tests[currentTest].KnapsackCost);
+        printf("Wrong knapsack cost output. Found %d, but expected %d. -- Failed\n", knapsackCost, TestData.Tests[currentTest].KnapsackCost);
         return 1;
     }
 
@@ -116,7 +116,7 @@ static int CheckFromArray(void) {
             return 1;
         }
         if (TestData.Tests[currentTest].Result[readItemsCount].Weight != weight || TestData.Tests[currentTest].Result[readItemsCount].Cost != cost) {
-            printf("Wrong item output. Found %d %d, but excepted %d %d. -- Failed\n", weight, cost, TestData.Tests[currentTest].Result[readItemsCount].Weight, TestData.Tests[currentTest].Result[readItemsCount].Cost);
+            printf("Wrong item output. Found %d %d, but expected %d %d. -- Failed\n", weight, cost, TestData.Tests[currentTest].Result[readItemsCount].Weight, TestData.Tests[currentTest].Result[readItemsCount].Cost);
             return 1;
         }
         ++readItemsCount;
