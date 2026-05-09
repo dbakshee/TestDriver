@@ -28,7 +28,15 @@ static const TTestCase TestCases[] = {
     {"\xA\xA\xA\xA", 4, CalcCompressedLength(1, 1, 4)}, // 19 20
     {"\xD\xD\xD\xD", 4, CalcCompressedLength(1, 1, 4)}, // 21 22
     {"\0\0\0\0", 4, CalcCompressedLength(1, 1, 4)}, // 23 24
-    {"\0\1\0\1", 4, CalcCompressedLength(2, 1, 4)}
+    {"\0\1\0\1", 4, CalcCompressedLength(2, 1, 4)},
+    {"AAAAAAAAAAAAA", 4, 2},
+    {"AAAAAAAAAAAAA", 5, 3},
+    {"AAAAAAAAAAAAA", 12, 3},
+    {"AAAAAAAAAAAAA", 13, 4},
+    {"BAAAAAAAAAAAA", 2, 3},
+    {"BAAAAAAAAAAAA", 3, 4},
+    {"BAAAAAAAAAAAA", 10, 4},
+    {"BAAAAAAAAAAAA", 11, 5},
 };
 
 #undef CalcCompressedLength
@@ -219,32 +227,6 @@ static int CheckCompressBig3(void) {
 }
 
 const TLabTest LabTests[] = {
-    {FeedCompressFromArray, CheckCompressFromArray}, // 1
-    {FeedDecompress, CheckDecompress}, // 2
-    {FeedCompressFromArray, CheckCompressFromArray}, // 3
-    {FeedDecompress, CheckDecompress}, // 4
-    {FeedCompressFromArray, CheckCompressFromArray}, // 5
-    {FeedDecompress, CheckDecompress}, // 6
-    {FeedCompressFromArray, CheckCompressFromArray}, // 7
-    {FeedDecompress, CheckDecompress}, // 8
-    {FeedCompressFromArray, CheckCompressFromArray}, // 9
-    {FeedDecompress, CheckDecompress}, // 10
-    {FeedCompressFromArray, CheckCompressFromArray}, // 11
-    {FeedDecompress, CheckDecompress}, // 12
-    {FeedCompressFromArray, CheckCompressFromArray}, // 13
-    {FeedDecompress, CheckDecompress}, // 14
-    {FeedCompressFromArray, CheckCompressFromArray}, // 15
-    {FeedDecompress, CheckDecompress}, // 16
-    {FeedCompressFromArray, CheckCompressFromArray}, // 17
-    {FeedDecompress, CheckDecompress}, // 18
-    {FeedCompressFromArray, CheckCompressFromArray}, // 19
-    {FeedDecompress, CheckDecompress}, // 20
-    {FeedCompressFromArray, CheckCompressFromArray}, // 21
-    {FeedDecompress, CheckDecompress}, // 22
-    {FeedCompressFromArray, CheckCompressFromArray}, // 23
-    {FeedDecompress, CheckDecompress}, // 24
-    {FeedCompressFromArray, CheckCompressFromArray}, // 25
-    {FeedDecompress, CheckDecompress}, // 26
     {FeedCompressBig1, CheckCompressBig1}, // 27 n=16
     {FeedDecompress, CheckDecompress}, // 28
     {FeedCompressBig2, CheckCompressBig2}, // 29
@@ -262,11 +244,21 @@ const TLabTest LabTests[] = {
 };
 
 TLabTest GetLabTest(int testIdx) {
-    return LabTests[testIdx];
+    int numArrayTestCases = 2 * sizeof(TestCases) / sizeof(TestCases[0]);
+    if (testIdx < numArrayTestCases) {
+        static const TLabTest fromArray[2] = {
+            {FeedCompressFromArray, CheckCompressFromArray},
+            {FeedDecompress, CheckDecompress},
+        };
+        return fromArray[testIdx % 2];
+    }
+    return LabTests[testIdx - numArrayTestCases];
 }
 
 int GetTestCount(void) {
-    return sizeof(LabTests)/sizeof(LabTests[0]);
+    int numArrayTestCases = 2 * sizeof(TestCases) / sizeof(TestCases[0]);
+    int numBigTestCases = sizeof(LabTests)/sizeof(LabTests[0]);
+    return numArrayTestCases + numBigTestCases;
 }
 
 const char* GetTesterName(void) {
