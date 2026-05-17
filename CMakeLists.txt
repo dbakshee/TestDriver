@@ -25,7 +25,6 @@ function(SET_COMPILER_SETTINGS target)
 		$<$<OR:$<C_COMPILER_ID:Clang>,$<C_COMPILER_ID:AppleClang>,$<C_COMPILER_ID:GNU>>:
 		-Wall
 		-Wextra
-		-static
 		-Wno-missing-field-initializers
 		-pedantic
 		-pedantic-errors
@@ -48,7 +47,7 @@ function(SET_COMPILER_SETTINGS target)
 		>)
 
 	if(MATH_LIBRARY)
-		target_link_libraries(${target} PUBLIC -Wl,-Bstatic ${MATH_LIBRARY} -Wl,-Bdynamic)
+		target_link_libraries(${target} PUBLIC ${MATH_LIBRARY})
 	endif()
 endfunction()
 
@@ -84,6 +83,9 @@ set(TEST_LAB_SOURCES
 	testlab-ray.c
 	testlab-gauss.c
 )
+
+set(BUILD_SHARED_LIBS OFF)
+
 foreach(source ${TEST_LAB_SOURCES})
 	get_filename_component(target ${source} NAME_WE)
 	add_executable(${target} ${source})
