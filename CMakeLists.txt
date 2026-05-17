@@ -25,6 +25,7 @@ function(SET_COMPILER_SETTINGS target)
 		$<$<OR:$<C_COMPILER_ID:Clang>,$<C_COMPILER_ID:AppleClang>,$<C_COMPILER_ID:GNU>>:
 		-Wall
 		-Wextra
+		-static
 		-Wno-missing-field-initializers
 		-pedantic
 		-pedantic-errors
