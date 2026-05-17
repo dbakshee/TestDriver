@@ -48,11 +48,11 @@ function(SET_COMPILER_SETTINGS target)
 		>)
 
 	if(MATH_LIBRARY)
-		target_link_libraries(${target} PUBLIC ${MATH_LIBRARY})
+		target_link_libraries(${target} PUBLIC -Wl,-Bstatic libname -Wl,-Bdynamic ${MATH_LIBRARY})
 	endif()
 endfunction()
 
-add_library(testDriver testDriver.c)
+add_library(testDriver STATIC testDriver.c)
 # EXTENSIONS YES заменяет std=c11 на std=gnu11, что выставляет POSIX макросы
 set_compiler_settings(testDriver EXTENSIONS YES)
 
