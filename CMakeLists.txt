@@ -48,7 +48,7 @@ function(SET_COMPILER_SETTINGS target)
 		>)
 
 	if(MATH_LIBRARY)
-		target_link_libraries(${target} PUBLIC -Wl,-Bstatic libname -Wl,-Bdynamic ${MATH_LIBRARY})
+		target_link_libraries(${target} PUBLIC -Wl,-Bstatic ${MATH_LIBRARY} -Wl,-Bdynamic)
 	endif()
 endfunction()
 
