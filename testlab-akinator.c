@@ -78,7 +78,6 @@ static int CheckFromArray(void) {
         }
     }
     buf[bytesRead] = '\0';
-    fclose(out);
 
     const char* status = Pass;
     if (_strnicmp(testInOut[testN].out, buf, strlen(testInOut[testN].out)) != 0) {
@@ -111,6 +110,7 @@ static int CheckFromArray(void) {
     if (status == Pass && HaveGarbageAtTheEnd(out)) {
         status = Fail;
     }
+    fclose(out);
 
     printf("%s\n", status == Pass ? "PASSED" : "FAILED");
     testN++;

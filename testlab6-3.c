@@ -144,6 +144,9 @@ static int CheckFromArray(void) {
         return -1;
     }
     bool passed = Check(testInOut[testN].out1, testInOut[testN].out2, out);
+    if (passed) {
+        passed = !HaveGarbageAtTheEnd(out);
+    }
     fclose(out);
     if (passed) {
         printf("PASSED\n");

@@ -56,13 +56,16 @@ static int CheckFromArray(void) {
     }
     char buf[128] = {0};
     const char* status = ScanChars(out, sizeof(buf), buf);
-    fclose(out);
     if (status == Pass && strchr(buf, '.')) {
         strncpy(buf + strlen(buf), "0000""0000""0000""0000""0000""0000""0000""0000", sizeof(buf) - strlen(buf) - 1);
     }
     if (status == Pass && _strnicmp(testInOut[testN].out, buf, strlen(testInOut[testN].out)) != 0) {
         status = Fail;
     }
+    if (status == Pass && HaveGarbageAtTheEnd(out)) {
+        status = Fail;
+    }
+    fclose(out);
     printf("%s\n", status);
     ++testN;
     return status == Fail;
