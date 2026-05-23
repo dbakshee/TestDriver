@@ -36,10 +36,11 @@ install:
     # скрипт настройки среды и установки зависимостей:
     - cmd: call "C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\vcvarsall.bat" x86
     - sh: sudo apt-get install -y ninja-build
+    - sh: sudo apt install musl-tools  # build alpine-compatible executable files
 
 before_build:
     - cmd: cmake -H. -Bbuild
-    - sh: cmake -H. -Bbuild -DCMAKE_BUILD_TYPE=Release -G Ninja
+    - sh: cmake -H. -Bbuild -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER=musl-gcc -DCMAKE_EXE_LINKER_FLAGS="-static" -G Ninja
     - sh: chmod +x test/*  # TODO выяснить куда исчезает флаг
 
 build_script:
