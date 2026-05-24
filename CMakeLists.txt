@@ -82,6 +82,7 @@ set(TEST_LAB_SOURCES
 	testlab-akinator.c
 	testlab-ray.c
 	testlab-gauss.c
+	testlab-knn.c
 )
 
 set(BUILD_SHARED_LIBS OFF)
