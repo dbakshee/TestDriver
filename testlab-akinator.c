@@ -90,6 +90,7 @@ static int CheckFromArray(void) {
         if (!tree) {
             printf("can't open tree.txt\n");
             testN++;
+            fclose(out);
             return -1;
         }
         char treeBuf[1024] = {0};

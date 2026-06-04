@@ -106,6 +106,9 @@ int main(int argc, char* argv[]) {
             fail = 1;
         }
         count += 1 - fail;
+        if (getenv("STOP_AT") && i+1 == atoi(getenv("STOP_AT"))) {
+            break;
+        }
     }
 
     if (count < GetTestCount()) {
@@ -452,6 +455,9 @@ DWORD GetTickCount(void) {
 
 static int CheckMemory(struct rusage rusage, size_t * labMem0) {
     *labMem0 = (size_t) rusage.ru_maxrss * RU_MAXRSS_UNITS;
+    if (getenv("SHOW_MEM_USED")) {
+        fprintf(stderr, "LAB USED %ziKiB memory\n", *labMem0 / 1024);
+    }
     if (GetMemoryLimit() < *labMem0) {
         return 1;
     }
