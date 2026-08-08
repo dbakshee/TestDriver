@@ -31,6 +31,19 @@ static void PrintWithoutBuffering(const char format[], ...) {
     fflush(stdout);
 }
 
+static void PrintUsage(const char* runnerExe) {
+    PrintWithoutBuffering(
+        "Usage: %s [options] TESTEE\n"
+        "\n"
+        "Options:\n"
+        "  -h, --help          Print this help and exit\n"
+        "  -a                  Run all tests, don't stop at the first failure\n"
+        "  -m KB               Set memory limit in KB\n"
+        "  -t MILLISECONDS     Set timeout in milliseconds\n"
+        "  -e TESTEE           (internal use) Run the lab executable directly\n",
+        runnerExe);
+}
+
 static const char* GetRunnerCommand(const char* runnerExe, char* labExe) {
     static char runnerCommand[4096] = {0};
     int testRunnerSize = snprintf(
@@ -51,6 +64,10 @@ int main(int argc, char* argv[]) {
     int i, count, fail;
     const char* runnerExe = argv[0];
 
+    if (argc >= 2 && (strcmp(argv[1], "-h") == 0 || strcmp(argv[1], "--help") == 0)) {
+        PrintUsage(runnerExe);
+        return 0;
+    }
     if (argc >= 3 && strcmp(argv[1], "-a") == 0) {
         UserTestAll = 1;
         argv++;
