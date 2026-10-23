@@ -1,4 +1,5 @@
 #include "testLab.h"
+#include <inttypes.h>
 #include <limits.h>
 #include <stdio.h>
 #include <string.h>
@@ -8,6 +9,10 @@ typedef struct
 {
     int x, y;
 } TPoint;
+
+static int PrintPoint(FILE *out, long long x, long long y) {
+    return fprintf(out, "%" PRId64 " %" PRId64 "\n", (int64_t)x, (int64_t)y);
+}
 
 static int testN = 0;
 static const struct { const char *const in, *const outError; int pointCount; TPoint outPoints[8]; } testInOut[] = {
@@ -340,34 +345,34 @@ static int FeederBigParabol(void)
     for (long long i = 1; i <= MAX_POINT_COUNT / 4; ++i) {
         int printCount = 0;
         if (bigParabolsN == 1) {
-            printCount += fprintf(in, "%lld %lld\n", i, i*i + INT_MIN);
-            printCount += fprintf(in, "%lld %lld\n", -i, i*i + INT_MIN);
+            printCount += PrintPoint(in, i, i*i + INT_MIN);
+            printCount += PrintPoint(in, -i, i*i + INT_MIN);
             i += MAX_POINT_COUNT / 4;
-            printCount += fprintf(in, "%lld %lld\n", i, i*i + INT_MIN);
-            printCount += fprintf(in, "%lld %lld\n", -i, i*i + INT_MIN);
+            printCount += PrintPoint(in, i, i*i + INT_MIN);
+            printCount += PrintPoint(in, -i, i*i + INT_MIN);
             i -= MAX_POINT_COUNT / 4;
         }
         else if (bigParabolsN == 2) {
-            printCount += fprintf(in, "%lld %lld\n", i, -i*i + INT_MAX);
-            printCount += fprintf(in, "%lld %lld\n", -i, -i*i + INT_MAX);
+            printCount += PrintPoint(in, i, -i*i + INT_MAX);
+            printCount += PrintPoint(in, -i, -i*i + INT_MAX);
             i += MAX_POINT_COUNT / 4;
-            printCount += fprintf(in, "%lld %lld\n", i, -i*i + INT_MAX);
-            printCount += fprintf(in, "%lld %lld\n", -i, -i*i + INT_MAX);
+            printCount += PrintPoint(in, i, -i*i + INT_MAX);
+            printCount += PrintPoint(in, -i, -i*i + INT_MAX);
             i -= MAX_POINT_COUNT / 4;
         }
         else if (bigParabolsN == 3) {
-            printCount += fprintf(in, "%lld %lld\n", i*i + INT_MIN, i);
-            printCount += fprintf(in, "%lld %lld\n", i*i + INT_MIN, -i);
+            printCount += PrintPoint(in, i*i + INT_MIN, i);
+            printCount += PrintPoint(in, i*i + INT_MIN, -i);
             i += MAX_POINT_COUNT / 4;
-            printCount += fprintf(in, "%lld %lld\n", i*i + INT_MIN, i);
-            printCount += fprintf(in, "%lld %lld\n", i*i + INT_MIN, -i);
+            printCount += PrintPoint(in, i*i + INT_MIN, i);
+            printCount += PrintPoint(in, i*i + INT_MIN, -i);
             i -= MAX_POINT_COUNT / 4;
         }
         else if (bigParabolsN == 4) {
-            printCount += fprintf(in, "%lld %lld\n", i, i*i);
-            printCount += fprintf(in, "%lld %lld\n", -i, i*i);
-            printCount += fprintf(in, "%lld %lld\n", i, -i*i);
-            printCount += fprintf(in, "%lld %lld\n", -i, -i*i);
+            printCount += PrintPoint(in, i, i*i);
+            printCount += PrintPoint(in, -i, i*i);
+            printCount += PrintPoint(in, i, -i*i);
+            printCount += PrintPoint(in, -i, -i*i);
         }
 
         if (printCount < 4) {

@@ -62,7 +62,7 @@ function(SET_COMPILER_SETTINGS target)
 
 	target_compile_definitions(${target} PRIVATE
 		$<$<BOOL:${MINGW}>:
-		__USE_MINGW_ANSI_STDIO=1
+		__USE_MINGW_ANSI_STDIO=0
 		>
 		$<$<C_COMPILER_ID:MSVC>:
 		_CRT_SECURE_NO_WARNINGS=1
