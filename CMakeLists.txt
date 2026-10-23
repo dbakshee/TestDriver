@@ -46,6 +46,16 @@ function(SET_COMPILER_SETTINGS target)
 		_CRT_SECURE_NO_WARNINGS=1
 		>)
 
+	target_compile_options(${target} PRIVATE
+		$<$<AND:$<C_COMPILER_ID:GNU>,$<CONFIG:Release>>:-Os>
+		$<$<AND:$<C_COMPILER_ID:Clang>,$<CONFIG:Release>>:-Os>
+		$<$<AND:$<C_COMPILER_ID:AppleClang>,$<CONFIG:Release>>:-Os>)
+
+	target_link_options(${target} PRIVATE
+		$<$<AND:$<C_COMPILER_ID:GNU>,$<CONFIG:Release>>:-s>
+		$<$<AND:$<C_COMPILER_ID:Clang>,$<CONFIG:Release>>:-s>
+		$<$<AND:$<C_COMPILER_ID:AppleClang>,$<CONFIG:Release>>:-s>)
+
 	if(MATH_LIBRARY)
 		target_link_libraries(${target} PUBLIC ${MATH_LIBRARY})
 	endif()
