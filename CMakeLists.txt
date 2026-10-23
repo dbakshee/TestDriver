@@ -90,7 +90,6 @@ set(BUILD_SHARED_LIBS OFF)
 foreach(source ${TEST_LAB_SOURCES})
 	get_filename_component(target ${source} NAME_WE)
 	add_executable(${target} ${source})
-	target_link_options(${target} PRIVATE -static)
 	set_compiler_settings(${target} EXTENSIONS NO)
 	target_link_libraries(${target} PRIVATE testDriver)
 
