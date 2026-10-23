@@ -6,6 +6,18 @@ enable_testing()
 
 find_library(MATH_LIBRARY m)
 
+include(CheckCSourceCompiles)
+check_c_source_compiles("
+#include <features.h>
+#if !defined(__GLIBC__)
+#error not glibc
+#endif
+#if !defined(__x86_64__) && !defined(__i386__)
+#error unsupported architecture
+#endif
+int main(void) { return 0; }
+" TESTDRIVER_GLIBC_START_MAIN_COMPAT)
+
 function(SET_COMPILER_SETTINGS target)
 	cmake_parse_arguments(
 		SET_COMPILER_SETTINGS
@@ -62,6 +74,9 @@ function(SET_COMPILER_SETTINGS target)
 endfunction()
 
 add_library(testDriver STATIC testDriver.c)
+if(TESTDRIVER_GLIBC_START_MAIN_COMPAT)
+	target_sources(testDriver PRIVATE glibc_compat.c)
+endif()
 # EXTENSIONS YES заменяет std=c11 на std=gnu11, что выставляет POSIX макросы
 set_compiler_settings(testDriver EXTENSIONS YES)
 
@@ -101,6 +116,9 @@ foreach(source ${TEST_LAB_SOURCES})
 	get_filename_component(target ${source} NAME_WE)
 	add_executable(${target} ${source})
 	set_compiler_settings(${target} EXTENSIONS NO)
+	if(TESTDRIVER_GLIBC_START_MAIN_COMPAT)
+		target_link_options(${target} PRIVATE -Wl,--wrap=__libc_start_main)
+	endif()
 	target_link_libraries(${target} PRIVATE testDriver)
 
 	string(REPLACE "testlab" "lab" test ${target})
