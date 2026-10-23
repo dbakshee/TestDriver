@@ -1,10 +1,20 @@
 cmake_minimum_required(VERSION 3.5)
 
+option(FOR_WINDOWS "Build testers for Windows using MinGW" OFF)
+if(FOR_WINDOWS)
+	set(CMAKE_SYSTEM_NAME Windows)
+	if(NOT CMAKE_C_COMPILER)
+		set(CMAKE_C_COMPILER i686-w64-mingw32-gcc)
+	endif()
+endif()
+
 project(TestDriver C)
 
 enable_testing()
 
-find_library(MATH_LIBRARY m)
+if(NOT WIN32)
+	find_library(MATH_LIBRARY m)
+endif()
 
 include(CheckCSourceCompiles)
 check_c_source_compiles("
@@ -123,11 +133,15 @@ foreach(source ${TEST_LAB_SOURCES})
 
 	string(REPLACE "testlab" "lab" test ${target})
 	add_test(NAME ${test}
-		COMMAND "${CMAKE_CURRENT_BINARY_DIR}/${target}"
+		COMMAND "$<TARGET_FILE:${target}>"
 			"${CMAKE_CURRENT_SOURCE_DIR}/test/${test}$<$<BOOL:${WIN32}>:.exe>")
 endforeach()
 
-add_custom_target(testlab3-1 ALL COMMAND ${CMAKE_COMMAND} -E copy testlab3-0 testlab3-1)
+add_custom_target(testlab3-1 ALL
+	COMMAND ${CMAKE_COMMAND} -E copy
+		testlab3-0${CMAKE_EXECUTABLE_SUFFIX} testlab3-1${CMAKE_EXECUTABLE_SUFFIX})
 add_dependencies(testlab3-1 testlab3-0)
-add_custom_target(testlab8-1 ALL COMMAND ${CMAKE_COMMAND} -E copy testlab8-0 testlab8-1)
+add_custom_target(testlab8-1 ALL
+	COMMAND ${CMAKE_COMMAND} -E copy
+		testlab8-0${CMAKE_EXECUTABLE_SUFFIX} testlab8-1${CMAKE_EXECUTABLE_SUFFIX})
 add_dependencies(testlab8-1 testlab8-0)
