@@ -4,7 +4,7 @@ option(FOR_WINDOWS "Build testers for Windows using MinGW" OFF)
 if(FOR_WINDOWS)
 	set(CMAKE_SYSTEM_NAME Windows)
 	if(NOT CMAKE_C_COMPILER)
-		set(CMAKE_C_COMPILER i686-w64-mingw32-gcc)
+		set(CMAKE_C_COMPILER x86_64-w64-mingw32-gcc)
 	endif()
 endif()
 
