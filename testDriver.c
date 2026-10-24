@@ -416,7 +416,7 @@ int LaunchLabExecutable(char* labExe)
         //fprintf(stderr, "PeakJobMemoryUsed %d\n", labJobLimits.PeakJobMemoryUsed);
         labMem0 = labJobLimits.PeakProcessMemoryUsed-labMem0;
     }
-    if ((long long)labMem0 > GetMemoryLimit()) {
+    if (labMem0 > GetMemoryLimit()) {
         exitCode = 1;
         ReportOutOfMemory(labExe, labMem0);
     }

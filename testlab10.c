@@ -11,7 +11,15 @@ typedef struct
 } TPoint;
 
 static int PrintPoint(FILE *out, long long x, long long y) {
-    return fprintf(out, "%" PRId64 " %" PRId64 "\n", (int64_t)x, (int64_t)y);
+#if defined(__MINGW32__)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wformat"
+#endif
+    int r = fprintf(out, "%" PRId64 " %" PRId64 "\n", (int64_t)x, (int64_t)y);
+#if defined(__MINGW32__)
+#pragma GCC diagnostic pop
+#endif
+    return r;
 }
 
 static int testN = 0;
